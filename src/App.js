@@ -10,23 +10,6 @@ function App() {
   const [data, setData] = useState([]);
   const [isXml, setXml] = useState(false);
 
-  function jsonToXml(json) {
-    let xml = "";
-
-    for (const key in json) {
-      xml += `<${key}>`;
-
-      if (typeof json[key] === "object") {
-        xml += jsonToXml(json[key]);
-      } else {
-        xml += json[key];
-      }
-
-      xml += `</${key}>`;
-    }
-    return xml;
-  }
-
   function SettingToast() {
     const [showA, setShowA] = useState(false);
     const toggleShowA = () => setShowA(!showA);
@@ -52,9 +35,6 @@ function App() {
           return response.json();
         })
         .then((res) => {
-          console.log(res);
-          console.log("new");
-          console.log(res.error);
           if (res.error) {
             e.preventDefault();
             setMessage("Please enter a valid IP address");
@@ -121,23 +101,41 @@ function App() {
     <div>
       <h3 className="heading">IP Address Tracker</h3>
       <SettingToast />
-
-      {Object.entries(data).map((entry) => {
-        const [key, value] = entry;
-        return (
-          <div className="data">
-            {isXml ? (
-              <div>{data} </div>
-            ) : (
-              <div>
-                {key}: {value}
-              </div>
-            )}
-          </div>
-        );
-      })}
+      <div id="ipdata">
+        {Object.entries(data).map((entry) => {
+          const [key, value] = entry;
+          return (
+            <div className="data">
+              {isXml ? (
+                <div>{data} </div>
+              ) : (
+                <div>
+                  {key}: {value}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
+}
+
+function jsonToXml(json) {
+  let xml = "";
+
+  for (const key in json) {
+    xml += `<${key}>`;
+
+    if (typeof json[key] === "object") {
+      xml += jsonToXml(json[key]);
+    } else {
+      xml += json[key];
+    }
+
+    xml += `</${key}>`;
+  }
+  return xml;
 }
 
 export default App;
