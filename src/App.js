@@ -2,7 +2,6 @@ import "./App.css";
 import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import React from "react";
-import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Toast from "react-bootstrap/Toast";
@@ -12,7 +11,6 @@ function App() {
   const [isXml, setXml] = useState(false);
 
   function jsonToXml(json) {
-    console.log(json);
     let xml = "";
 
     for (const key in json) {
@@ -26,21 +24,81 @@ function App() {
 
       xml += `</${key}>`;
     }
-    console.log(xml);
     return xml;
   }
 
-  function DismissibleExample() {
-    const [showA, setShowA] = useState(true);
-
+  function SettingToast() {
+    const [showA, setShowA] = useState(false);
     const toggleShowA = () => setShowA(!showA);
+    const [message, setMessage] = useState("");
+
+    const fetchApi = (e) => {
+      const ip = document.getElementById("ipaddress").value;
+      const format = document.getElementById("format").value;
+      if (ip === "") {
+        e.preventDefault();
+        setMessage("Please enter an IP address");
+        return toggleShowA();
+      }
+      const url = "https://ipapi.co/" + ip + "/json/";
+      e.preventDefault();
+      fetch(url)
+        .catch((err) => {
+          console.log("err");
+          setData(err);
+        })
+        .then((response) => {
+          console.log(response);
+          return response.json();
+        })
+        .then((res) => {
+          console.log(res);
+          console.log("new");
+          console.log(res.error);
+          if (res.error) {
+            e.preventDefault();
+            setMessage("Please enter a valid IP address");
+            return toggleShowA();
+          }
+          if (format === "xml") {
+            var ans = jsonToXml(res);
+            setXml(true);
+          } else if (format === "json") {
+            ans = res;
+          }
+          setData(ans);
+        });
+    };
 
     return (
       <Row>
-        <Col md={6} className="mb-2">
-          <Button onClick={toggleShowA} className="mb-2">
-            Toggle Toast <strong>with</strong> Animation
-          </Button>
+        <form onSubmit={fetchApi} method="get">
+          <div className="mb-3">
+            <input
+              className="form-control w-auto search"
+              id="ipaddress"
+              name="ipaddress"
+              placeholder="IP Address"
+              type="text"
+            />
+          </div>
+          <div className="mb-3">
+            <select
+              className="form-select w-auto select"
+              name="format"
+              id="format"
+            >
+              <option value="json">json</option>
+              <option value="xml">xml</option>
+            </select>
+          </div>
+          <div className="mb-3">
+            <button className="btn btn-primary button" type="submit">
+              Search
+            </button>
+          </div>
+        </form>
+        <Col md={{ span: 6, offset: 6 }} className="mb-2">
           <Toast show={showA} onClose={toggleShowA}>
             <Toast.Header>
               <img
@@ -48,11 +106,10 @@ function App() {
                 className="rounded me-2"
                 alt=""
               />
-              <strong className="me-auto">Bootstrap</strong>
-              <small>11 mins ago</small>
+              <strong className="me-auto">Error</strong>
             </Toast.Header>
             <Toast.Body>
-              Woohoo, you're reading this text in a Toast!
+              <p>{message}</p>
             </Toast.Body>
           </Toast>
         </Col>
@@ -60,71 +117,10 @@ function App() {
     );
   }
 
-  const fetchApi = (e) => {
-    const ip = document.getElementById("ipaddress").value;
-    const format = document.getElementById("format").value;
-    if (ip === "") {
-      e.preventDefault();
-      // return alert("Please enter an IP address");
-      console.log("Please enter an IP address");
-      // $(".toast").toast("show");
-      // return <DismissibleExample />
-      // return Toast("Please enter an IP address");
-    }
-    const url = "https://ipapi.co/" + ip + "/json/";
-    e.preventDefault();
-    fetch(url)
-      .catch((err) => {
-        console.log("err");
-        setData(err);
-      })
-      .then((response) => {
-        console.log(response);
-        return response.json();
-      })
-      .then((res) => {
-        console.log(res);
-        if (format === "xml") {
-          var ans = jsonToXml(res);
-          setXml(true);
-        } else if (format === "json") {
-          ans = res;
-        }
-        console.log(ans);
-        setData(ans);
-      });
-  };
-
   return (
     <div>
       <h3 className="heading">IP Address Tracker</h3>
-      <DismissibleExample />
-      <form onSubmit={fetchApi} method="get">
-        <div className="mb-3">
-          <input
-            className="form-control w-auto search"
-            id="ipaddress"
-            name="ipaddress"
-            placeholder="IP Address"
-            type="text"
-          />
-        </div>
-        <div className="mb-3">
-          <select
-            className="form-select w-auto select"
-            name="format"
-            id="format"
-          >
-            <option value="json">json</option>
-            <option value="xml">xml</option>
-          </select>
-        </div>
-        <div className="mb-3">
-          <button className="btn btn-primary button" type="submit">
-            Search
-          </button>
-        </div>
-      </form>
+      <SettingToast />
 
       {Object.entries(data).map((entry) => {
         const [key, value] = entry;
