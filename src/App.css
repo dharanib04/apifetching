@@ -17,6 +17,12 @@
   position: relative;
   left: 45%;
 }
+.xmldata {
+  position: absolute;
+  top: 15%;
+  left: 45%;
+  right: 35%;
+}
 body {
   overflow-x: hidden;
   background-image: url("https://image.ibb.co/de6JzG/bitmap_1_1.png");

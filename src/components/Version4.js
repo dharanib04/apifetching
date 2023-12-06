@@ -1,4 +1,4 @@
-import "./App.css";
+import "/Users/dharanibaskaran/apifetching/src/App.css";
 import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import React from "react";
@@ -6,7 +6,7 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Toast from "react-bootstrap/Toast";
 
-function App() {
+function Version4() {
   const [data, setData] = useState([]);
   const [isXml, setXml] = useState(false);
 
@@ -99,10 +99,35 @@ function App() {
 
   return (
     <div>
+      <nav class="navbar">
+        <div class="container-fluid">
+          <div class="navbar-brand"></div>
+          <form class="d-flex" role="search">
+            <a href="/" class="btn btn-outline-primary" type="submit">
+              Back to Home
+            </a>
+          </form>
+        </div>
+      </nav>
       <h3 className="heading">IP Address Tracker</h3>
       <SettingToast />
       <div id="ipdata">
-        {Object.entries(data).map((entry) => {
+        {isXml ? (
+          <div className="xmldata">{data}</div>
+        ) : (
+          <div>
+            {Object.entries(data).map((entry) => {
+              const [key, value] = entry;
+              return (
+                <div className="data">
+                  {key}: {value}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* {Object.entries(data).map((entry) => {
           const [key, value] = entry;
           return (
             <div className="data">
@@ -115,7 +140,7 @@ function App() {
               )}
             </div>
           );
-        })}
+        })} */}
       </div>
     </div>
   );
@@ -138,4 +163,4 @@ function jsonToXml(json) {
   return xml;
 }
 
-export default App;
+export default Version4;
